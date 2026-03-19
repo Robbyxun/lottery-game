@@ -176,10 +176,34 @@
         canvas.addEventListener(evt, () => isDrawing = false));
 
     function reset() {
+        // 1. 先把畫布變回不透明 (避免看到底下的新獎項)
+        canvas.style.transition = "none"; 
         canvas.style.opacity = "1";
-        init();
+        
+        // 2. 清除畫布並重新填滿灰色
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = '#bdc3c7';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 3. 重新加入紋理
+        ctx.fillStyle = '#95a5a6';
+        for(let i=0; i<300; i++) {
+            ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 1, 1);
+        }
+
+        // 4. 等遮蓋完成了，再偷偷換掉底下的獎項文字
+        setTimeout(() => {
+            initPrize(); // 抽新獎項
+            isFinished = false;
+            isDrawing = false;
+            statusDisplay.innerText = "請刮開灰色區域";
+        }, 50); // 這裡給一個極短的延遲，確保畫面已經被遮住
     }
 
+    // 建議將抽獎邏輯獨立出來
+    function initPrize() {
+        prizeDisplay.innerText = prizes[Math.floor(Math.random() * prizes.length)];
+    }
     init();
 </script>
 </body>
